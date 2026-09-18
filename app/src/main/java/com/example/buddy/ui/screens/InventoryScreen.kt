@@ -65,6 +65,8 @@ import com.example.buddy.ui.theme.SecondarySage
 import com.example.buddy.ui.theme.SurfaceContainerLow
 import com.example.buddy.ui.theme.SurfaceWhite
 import com.example.buddy.ui.theme.TerracottaAccent
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.clickable
 
 @Composable
 fun InventoryScreen(
@@ -236,92 +238,167 @@ fun PantryItemCard(
 
     Surface(
         modifier = Modifier
-            .fillMaxWidth()
-            .shadow(2.dp, RoundedCornerShape(16.dp)),
-        shape = RoundedCornerShape(16.dp),
+            .width(265.dp)
+            .shadow(
+                elevation = 1.dp,
+                shape = RoundedCornerShape(14.dp)
+            ),
+        shape = RoundedCornerShape(14.dp),
         color = SurfaceWhite
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+
+        Column(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            // Thumbnail
+
+            // IMAGE
             Box(
                 modifier = Modifier
-                    .size(54.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(SurfaceContainerLow)
+                    .fillMaxWidth()
+                    .height(145.dp)
             ) {
+
                 AsyncImage(
                     model = item.imageUrl,
                     contentDescription = item.name,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
-            }
 
-            Spacer(modifier = Modifier.width(12.dp))
-
-            // Details
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = item.name,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = OnSurface,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = "${item.storageZone} • ${item.packageSize}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = OnSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(if (isUrgent) Color(0xFFFFEAE6) else SecondaryFixed)
-                            .padding(horizontal = 7.dp, vertical = 2.dp)
-                    ) {
-                        Text(
-                            text = if (isUrgent) "$daysRemaining days left (Expiring)" else "$daysRemaining days safe",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = if (isUrgent) TerracottaAccent else OnSecondaryFixed,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 10.sp
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(6.dp))
+                // STORAGE ZONE BADGE
+                Surface(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(10.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    color = Color(0xFFF5F4F0)
+                ) {
 
                     Text(
-                        text = "Qty: ${item.quantity}",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = OnSurfaceVariant,
-                        fontSize = 10.sp
+                        text = item.storageZone,
+                        modifier = Modifier.padding(
+                            horizontal = 9.dp,
+                            vertical = 2.dp
+                        ),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = OnSurfaceVariant
                     )
                 }
             }
 
-            // Action: Delete / Consume
-            IconButton(
-                onClick = onDelete,
-                modifier = Modifier.size(32.dp)
+            // ITEM DETAILS
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = 11.dp,
+                        end = 11.dp,
+                        top = 9.dp,
+                        bottom = 10.dp
+                    )
             ) {
-                Icon(
-                    imageVector = Icons.Outlined.Delete,
-                    contentDescription = "Delete item",
-                    tint = OnSurfaceVariant.copy(alpha = 0.7f),
-                    modifier = Modifier.size(18.dp)
+
+                // Name + package size
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Text(
+                        text = item.name,
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium,
+                        color = OnSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+
+                    Spacer(
+                        modifier = Modifier.width(6.dp)
+                    )
+
+                    Text(
+                        text = item.packageSize,
+                        fontSize = 12.sp,
+                        color = OnSurfaceVariant,
+                        maxLines = 1
+                    )
+                }
+
+                Spacer(
+                    modifier = Modifier.height(9.dp)
                 )
+
+                // EXPIRY + CONSUMED BUTTON
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    // Expiry badge
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(
+                                if (isUrgent) {
+                                    Color(0xFFFFE0D9)
+                                } else {
+                                    SecondaryFixed
+                                }
+                            )
+                            .padding(
+                                horizontal = 9.dp,
+                                vertical = 0.dp
+                            )
+                    ) {
+
+                        Text(
+                            text = when {
+                                daysRemaining <= 0 ->
+                                    "Expired"
+
+                                daysRemaining == 1 ->
+                                    "1 day left"
+
+                                else ->
+                                    "$daysRemaining days left"
+                            },
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = if (isUrgent) {
+                                TerracottaAccent
+                            } else {
+                                OnSecondaryFixed
+                            }
+                        )
+                    }
+
+                    Spacer(
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    // Consumed button
+                    Box(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFFF3F2EE))
+                            .clickable {
+                                onToggleConsumed()
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+
+                        Text(
+                            text = "✓",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = OnSurfaceVariant
+                        )
+                    }
+                }
             }
         }
     }

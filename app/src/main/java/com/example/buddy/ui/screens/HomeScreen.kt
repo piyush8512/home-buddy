@@ -20,6 +20,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.QrCodeScanner
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.ArrowForward
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -47,6 +49,8 @@ import com.example.buddy.ui.theme.SecondaryFixed
 import com.example.buddy.ui.theme.SecondarySage
 import com.example.buddy.ui.theme.SurfaceWhite
 import com.example.buddy.ui.theme.TerracottaAccent
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 
 @Composable
 fun HomeScreen(
@@ -54,8 +58,11 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     val items by viewModel.pantryItems.collectAsStateWithLifecycle()
-    val expiringSoonCount = items.count { calculateDaysRemaining(it.expiryDateMillis) <= 5 }
-    val safeCount = items.size - expiringSoonCount
+    val expiringItems = items.filter {
+        calculateDaysRemaining(it.expiryDateMillis) <= 5
+    }
+
+    val expiringSoonCount = expiringItems.size
 
     Column(
         modifier = modifier
@@ -65,96 +72,106 @@ fun HomeScreen(
     ) {
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Hero Quick Scan Banner
-        Surface(
+        // TOP STATUS + SEARCH
+        Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .shadow(4.dp, RoundedCornerShape(20.dp))
-                .clickable { viewModel.setBottomNav(NavTab.SCAN) }
-                .testTag("home_scan_banner"),
-            shape = RoundedCornerShape(20.dp),
-            color = PrimaryDark
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(18.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Surface(
+                shape = RoundedCornerShape(50.dp),
+                color = Color(0xFFE8E8E3)
             ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Outlined.AutoAwesome,
-                            contentDescription = null,
-                            tint = SecondaryFixed,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "SMART OPTICAL SCANNER",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = SecondaryFixed,
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.sp
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Scan Groceries & Expiries",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.White
-                    )
-                    Text(
-                        text = "Automatic OCR extraction into fridge & pantry zones.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFFC8C6C8)
-                    )
-                }
-
-                Box(
-                    modifier = Modifier
-                        .size(44.dp)
-                        .clip(CircleShape)
-                        .background(SecondarySage),
-                    contentAlignment = Alignment.Center
+                Row(
+                    modifier = Modifier.padding(
+                        horizontal = 10.dp,
+                        vertical = 2.dp
+                    ),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Outlined.QrCodeScanner,
-                        contentDescription = "Scan",
-                        tint = Color.White,
-                        modifier = Modifier.size(22.dp)
+                    Box(
+                        modifier = Modifier
+                            .size(7.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFF52796F))
+                    )
+                    Spacer(
+                        modifier = Modifier.width(6.dp)
+                    )
+                    Text(
+                        text = "Pantry & Chilled Sync",
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = OnSurfaceVariant
                     )
                 }
             }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Overview Stats Grid
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            StatCard(
-                title = "Total Stored",
-                count = "${items.size}",
-                subtitle = "Active items in pantry",
-                color = SecondarySage,
+            Spacer(
                 modifier = Modifier.weight(1f)
             )
-
-            StatCard(
-                title = "Expiring Soon",
-                count = "$expiringSoonCount",
-                subtitle = "Within next 5 days",
-                color = if (expiringSoonCount > 0) TerracottaAccent else SecondarySage,
-                modifier = Modifier.weight(1f)
-            )
+            Box(
+                modifier = Modifier
+                    .size(46.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFFF5F4F0))
+                    .clickable {
+                        // Search action
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Search,
+                    contentDescription = "Search",
+                    tint = OnSurface,
+                    modifier = Modifier.size(22.dp)
+                )
+            }
         }
 
-        Spacer(modifier = Modifier.height(18.dp))
+        //Greetings
+        Text(
+            text = "Good morning, Piyush",
+            fontSize = 24.sp,
+            lineHeight = 10.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = OnSurface
+        )
+
+        Spacer(
+            modifier = Modifier.height(4.dp)
+        )
+
+        Text(
+            text = when (expiringSoonCount) {
+                0 -> "Everything looks good this week"
+                1 -> "1 item needs your attention this week"
+                else -> "$expiringSoonCount items need your attention this week"
+            },
+            fontSize = 14.sp,
+            color = OnSurfaceVariant
+        )
+
+        Spacer(
+            modifier = Modifier.height(8.dp)
+        )
+
+        //expring Alert
+        if (expiringItems.isNotEmpty()) {
+            val priorityItem = expiringItems.first()
+            PriorityCard(
+                itemName = priorityItem.name,
+                daysRemaining = calculateDaysRemaining(
+                    priorityItem.expiryDateMillis
+                ),
+                onClick = {
+                    // Open item details
+                }
+            )
+
+            Spacer(
+                modifier = Modifier.height(28.dp)
+            )
+        }
 
         // Expiring Soon Priority List
         Row(
@@ -163,7 +180,7 @@ fun HomeScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Pantry Attention",
+                text = "Expiring Soon",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = OnSurface
@@ -177,13 +194,15 @@ fun HomeScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            items(items.take(4)) { item ->
+            items.take(4).forEach { item ->
                 PantryItemCard(
                     item = item,
                     onDelete = { viewModel.deleteItem(item) },
@@ -213,6 +232,139 @@ private fun StatCard(
             Text(count, style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.SemiBold, color = color)
             Spacer(modifier = Modifier.height(2.dp))
             Text(subtitle, style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant, fontSize = 11.sp)
+        }
+    }
+}
+
+// PRIORITY CARD
+
+@Composable
+private fun PriorityCard(
+    itemName: String,
+    daysRemaining: Int,
+    onClick: () -> Unit
+) {
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                onClick()
+            },
+        shape = RoundedCornerShape(16.dp),
+        color = SurfaceWhite,
+        shadowElevation = 1.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = 18.dp,
+                    vertical = 12.dp
+                ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            // Priority indicator
+            Box(
+                modifier = Modifier
+                    .size(30.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFFFFDAD1)),
+                contentAlignment = Alignment.Center
+            ) {
+
+                Box(
+                    modifier = Modifier
+                        .size(6.dp)
+                        .clip(CircleShape)
+                        .background(TerracottaAccent)
+                )
+            }
+
+            Spacer(
+                modifier = Modifier.width(14.dp)
+            )
+
+            // Item information
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Text(
+                        text = "PRIORITY CHECK",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 0.8.sp,
+                        color = TerracottaAccent
+                    )
+
+                    Spacer(
+                        modifier = Modifier.width(7.dp)
+                    )
+
+                    Text(
+                        text = "•",
+                        fontSize = 12.sp,
+                        color = OnSurfaceVariant
+                    )
+
+                    Spacer(
+                        modifier = Modifier.width(7.dp)
+                    )
+
+                    Text(
+                        text = when {
+                            daysRemaining <= 0 -> {
+                                "Expired"
+                            }
+
+                            daysRemaining == 1 -> {
+                                "Expires in 24h"
+                            }
+
+                            else -> {
+                                "Expires in ${daysRemaining * 24}h"
+                            }
+                        },
+                        fontSize = 14.sp,
+                        color = OnSurfaceVariant
+                    )
+                }
+
+                Text(
+                    text = itemName,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = OnSurface,
+                    maxLines = 1
+                )
+            }
+
+            Spacer(
+                modifier = Modifier.width(10.dp)
+            )
+
+            // Arrow button
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFFF2F1ED)),
+                contentAlignment = Alignment.Center
+            ) {
+
+                Icon(
+                    imageVector = Icons.Outlined.ArrowForward,
+                    contentDescription = "Open item",
+                    tint = OnSurfaceVariant,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         }
     }
 }

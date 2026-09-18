@@ -132,14 +132,13 @@ fun PantryTopBar(
             modifier = Modifier
                 .size(44.dp)
                 .clip(CircleShape)
-                .background(SurfaceContainer)
                 .testTag("notification_button")
         ) {
             Icon(
                 imageVector = Icons.Outlined.Notifications,
                 contentDescription = "Notifications",
                 tint = OnSurfaceVariant,
-                modifier = Modifier.size(22.dp)
+                modifier = Modifier.size(25.dp)
             )
         }
 
@@ -147,7 +146,7 @@ fun PantryTopBar(
 
         Box(
             modifier = Modifier
-                .size(44.dp)
+                .size(40.dp)
                 .clip(CircleShape)
                 .background(SurfaceContainer)
         ) {
