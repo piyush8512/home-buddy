@@ -51,6 +51,13 @@ import com.example.buddy.ui.theme.SurfaceWhite
 import com.example.buddy.ui.theme.TerracottaAccent
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.outlined.TrendingUp
+import androidx.compose.material.icons.outlined.BakeryDining
+import androidx.compose.material.icons.outlined.Coffee
+import androidx.compose.material.icons.outlined.Soap
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun HomeScreen(
@@ -69,6 +76,7 @@ fun HomeScreen(
             .fillMaxSize()
             .background(BaseCanvas)
             .padding(horizontal = 20.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -210,6 +218,27 @@ fun HomeScreen(
                 )
             }
         }
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        WeeklyOverviewCard()
+
+        Spacer(
+            modifier = Modifier.height(18.dp)
+        )
+        RestockCard()
+
+        Spacer(
+            modifier = Modifier.height(16.dp)
+        )
+
+        SpacesSection()
+
+        Spacer(
+            modifier = Modifier.height(16.dp)
+        )
+
+
     }
 }
 
@@ -365,6 +394,518 @@ private fun PriorityCard(
                     modifier = Modifier.size(20.dp)
                 )
             }
+        }
+    }
+}
+
+
+@Composable
+private fun WeeklyOverviewCard(
+    modifier: Modifier = Modifier
+) {
+    val barHeights = listOf(
+        22.dp,
+        45.dp,
+        62.dp,
+        38.dp,
+        34.dp,
+        20.dp,
+        8.dp
+    )
+
+    val days = listOf("M", "T", "W", "T", "F", "S", "S")
+
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        color = SurfaceWhite,
+        shadowElevation = 1.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(
+                horizontal = 22.dp,
+                vertical = 17.dp
+            )
+        ) {
+
+            // Header
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = "WEEKLY OVERVIEW",
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        letterSpacing = 0.7.sp,
+                        color = OnSurfaceVariant
+                    )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "$64.20",
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Normal,
+                            color = OnSurface
+                        )
+
+                        Spacer(modifier = Modifier.width(6.dp))
+
+                        Text(
+                            text = "↓ 12% vs last week",
+                            fontSize = 13.sp,
+                            color = SecondarySage
+                        )
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFF5F4F0)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.TrendingUp,
+                        contentDescription = "Weekly trend",
+                        tint = SecondarySage,
+                        modifier = Modifier.size(19.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Weekly chart
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(73.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom
+            ) {
+                barHeights.forEachIndexed { index, height ->
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .width(22.dp)
+                                .height(height)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(
+                                    if (index == 2) {
+                                        SecondarySage
+                                    } else {
+                                        Color(0xFFE8E8E3)
+                                    }
+                                )
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Text(
+                            text = days[index],
+                            fontSize = 11.sp,
+                            fontWeight = if (index == 2) {
+                                FontWeight.Bold
+                            } else {
+                                FontWeight.Normal
+                            },
+                            color = if (index == 2) {
+                                OnSurface
+                            } else {
+                                OnSurfaceVariant
+                            }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Bottom information
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(9.dp)
+                        .clip(CircleShape)
+                        .background(SecondarySage)
+                )
+
+                Spacer(modifier = Modifier.width(7.dp))
+
+                Text(
+                    text = "0 items wasted this cycle",
+                    fontSize = 12.sp,
+                    color = OnSurface
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Text(
+                    text = "4 days left",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = OnSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
+private fun RestockCard(
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        color = SurfaceWhite,
+        shadowElevation = 1.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(
+                horizontal = 16.dp,
+                vertical = 12.dp
+            )
+        ) {
+
+            // Header
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "To Restock",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = OnSurface
+                )
+
+                Spacer(
+                    modifier = Modifier.width(8.dp)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(25.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFE8E8E3)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "3",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = OnSurfaceVariant
+                    )
+                }
+
+                Spacer(
+                    modifier = Modifier.weight(1f)
+                )
+
+                Text(
+                    text = "Full checklist",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = SecondarySage
+                )
+            }
+
+            Spacer(
+                modifier = Modifier.height(10.dp)
+            )
+
+            RestockItem(
+                icon = Icons.Outlined.Coffee,
+                name = "Roast Espresso Beans",
+                details = "Main Pantry • Low stock (50g)"
+            )
+
+            RestockDivider()
+
+            RestockItem(
+                icon = Icons.Outlined.Soap,
+                name = "Dish Wash Refill",
+                details = "Under Sink • Completely empty"
+            )
+
+            RestockDivider()
+
+            RestockItem(
+                icon = Icons.Outlined.BakeryDining,
+                name = "Organic Sourdough",
+                details = "Bread Box • Finished yesterday"
+            )
+
+            Spacer(
+                modifier = Modifier.height(4.dp)
+            )
+
+
+        }
+    }
+}
+
+@Composable
+private fun RestockItem(
+    icon: ImageVector,
+    name: String,
+    details: String
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        // Icon container
+        Box(
+            modifier = Modifier
+                .size(42.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color(0xFFF2F1ED)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = OnSurfaceVariant,
+                modifier = Modifier.size(21.dp)
+            )
+        }
+
+        Spacer(
+            modifier = Modifier.width(14.dp)
+        )
+
+        // Item information
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = name,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = OnSurface,
+                maxLines = 1
+            )
+
+            Spacer(
+                modifier = Modifier.height(2.dp)
+            )
+
+            Text(
+                text = details,
+                fontSize = 12.sp,
+                color = OnSurfaceVariant,
+                maxLines = 1
+            )
+        }
+
+        Spacer(
+            modifier = Modifier.width(8.dp)
+        )
+
+        // Add to list
+        Surface(
+            shape = RoundedCornerShape(50.dp),
+            color = Color(0xFFF3F2EF)
+        ) {
+            Row(
+                modifier = Modifier.padding(
+                    horizontal = 13.dp,
+                    vertical = 8.dp
+                ),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "+",
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = OnSurface
+                )
+
+                Spacer(
+                    modifier = Modifier.width(5.dp)
+                )
+
+                Text(
+                    text = "List",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = OnSurface
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun RestockDivider() {
+    Spacer(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .background(Color(0xFFEDEBE7))
+    )
+}
+
+@Composable
+private fun SpaceCard(
+    name: String,
+    itemCount: Int,
+    subtitle: String,
+    icon: String,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        color = SurfaceWhite,
+        shadowElevation = 1.dp
+    ) {
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp)
+        ) {
+
+            // Icon + item count
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Box(
+                    modifier = Modifier
+                        .size(38.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color(0xFFF2F2EE)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = icon,
+                        fontSize = 20.sp,
+                        color = SecondarySage
+                    )
+                }
+
+                Spacer(
+                    modifier = Modifier.weight(1f)
+                )
+
+                Text(
+                    text = "$itemCount items",
+                    fontSize = 13.sp,
+                    color = OnSurfaceVariant
+                )
+            }
+
+            Spacer(
+                modifier = Modifier.height(10.dp)
+            )
+
+            // Space name
+            Text(
+                text = name,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = OnSurface
+            )
+
+            Spacer(
+                modifier = Modifier.height(3.dp)
+            )
+
+            // Space status
+            Text(
+                text = subtitle,
+                fontSize = 14.sp,
+                color = OnSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun SpacesSection(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
+
+        // =====================================================
+        // HEADER
+        // =====================================================
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Text(
+                text = "Spaces",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = OnSurface
+            )
+
+            Spacer(
+                modifier = Modifier.weight(1f)
+            )
+
+            Text(
+                text = "4 Zones",
+                fontSize = 14.sp,
+                color = OnSurfaceVariant
+            )
+        }
+
+        Spacer(
+            modifier = Modifier.height(10.dp)
+        )
+
+        // =====================================================
+        // SPACE CARDS
+        // =====================================================
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+
+            SpaceCard(
+                name = "Pantry",
+                itemCount = 12,
+                subtitle = "85% full",
+                icon = "▣",
+                modifier = Modifier.weight(1f)
+            )
+
+            SpaceCard(
+                name = "Refrigerator",
+                itemCount = 16,
+                subtitle = "2 need care",
+                icon = "✳",
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }
