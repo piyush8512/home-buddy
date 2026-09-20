@@ -216,16 +216,239 @@ fun InventoryScreen(
                 contentPadding = PaddingValues(bottom = 24.dp)
             ) {
                 items(filteredItems, key = { it.id }) { item ->
-                    PantryItemCard(
+                    InvetryItemCard(
                         item = item,
                         onDelete = { viewModel.deleteItem(item) },
-                        onToggleConsumed = { viewModel.toggleItemConsumed(item) }
+                        onToggleConsumed = { viewModel.toggleItemConsumed(item) },
+                        onQuantityChange = { quantity ->
+//                            viewModel.updateQuantity(item, quantity)
+                        }
+
                     )
                 }
             }
         }
     }
 }
+
+
+@Composable
+fun InvetryItemCard(
+    item: PantryItem,
+    onDelete: () -> Unit,
+    onToggleConsumed: () -> Unit,
+    onQuantityChange: (Int) -> Unit
+) {
+    val daysRemaining = calculateDaysRemaining(item.expiryDateMillis)
+
+    val isUrgent = daysRemaining <= 5
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 1.dp,
+                shape = RoundedCornerShape(14.dp)
+            ),
+        shape = RoundedCornerShape(14.dp),
+        color = SurfaceWhite
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 16.dp,
+                    top = 12.dp,
+                    end = 16.dp,
+                    bottom = 12.dp
+                )
+        ) {
+
+            // -------------------------
+            // TOP SECTION
+            // -------------------------
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Top
+            ) {
+
+                // ITEM IMAGE
+                AsyncImage(
+                    model = item.imageUrl,
+                    contentDescription = item.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(52.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                )
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                // NAME + LOCATION
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        Text(
+                            text = item.name,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = OnSurface,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+
+                        Spacer(modifier = Modifier.width(7.dp))
+
+                        // PACKAGE INITIAL
+                        Box(
+                            modifier = Modifier
+                                .size(20.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFFD7EBDD)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = item.packageSize
+                                    .firstOrNull()
+                                    ?.uppercase()
+                                    ?: "",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF4E7A5A)
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(3.dp))
+
+                    Text(
+                        text = item.storageZone,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = OnSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                // EXPIRY BADGE
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(
+                            if (isUrgent) {
+                                Color(0xFFFFD9D3)
+                            } else {
+                                SecondaryFixed
+                            }
+                        )
+                        .padding(
+                            horizontal = 9.dp,
+                            vertical = 5.dp
+                        )
+                ) {
+                    Text(
+                        text = when {
+                            daysRemaining <= 0 ->
+                                "Expired"
+
+                            daysRemaining == 1 ->
+                                "Expires in 1d"
+
+                            else ->
+                                "Expires in ${daysRemaining}d"
+                        },
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = if (isUrgent) {
+                            TerracottaAccent
+                        } else {
+                            OnSecondaryFixed
+                        }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(18.dp))
+
+            // -------------------------
+            // BOTTOM SECTION
+            // -------------------------
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Text(
+                    text = "Quantity in stock",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = OnSurfaceVariant
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                // QUANTITY CONTROL
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(Color(0xFFF4F3EF))
+                        .padding(horizontal = 4.dp, vertical = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    // MINUS
+                    IconButton(
+                        onClick = {
+                            onQuantityChange(
+                                maxOf(1, item.quantity - 1)
+                            )
+                        },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Text(
+                            text = "−",
+                            fontSize = 20.sp,
+                            color = OnSurface
+                        )
+                    }
+
+                    // QUANTITY
+                    Text(
+                        text = item.quantity.toString(),
+                        modifier = Modifier.width(28.dp),
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = OnSurface,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+
+                    // PLUS
+                    IconButton(
+                        onClick = {
+                            onQuantityChange(item.quantity + 1)
+                        },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Text(
+                            text = "+",
+                            fontSize = 18.sp,
+                            color = OnSurface
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
 
 @Composable
 fun PantryItemCard(
