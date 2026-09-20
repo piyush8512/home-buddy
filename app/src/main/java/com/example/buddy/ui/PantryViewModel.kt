@@ -269,7 +269,7 @@ class PantryViewModel(application: Application) : AndroidViewModel(application) 
 }
 
 enum class NavTab(val title: String) {
-    HOME("Home"),
+    HOME("Today"),
     INVENTORY("Inventory"),
     SCAN("Scan"),
     LISTS("Lists"),

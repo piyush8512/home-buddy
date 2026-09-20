@@ -58,10 +58,12 @@ import androidx.compose.material.icons.outlined.Soap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import com.example.buddy.data.PantryItem
 
 @Composable
 fun HomeScreen(
     viewModel: PantryViewModel,
+    onPriorityClick: (PantryItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val items by viewModel.pantryItems.collectAsStateWithLifecycle()
@@ -172,7 +174,7 @@ fun HomeScreen(
                     priorityItem.expiryDateMillis
                 ),
                 onClick = {
-                    // Open item details
+                    onPriorityClick(priorityItem)
                 }
             )
 
@@ -851,10 +853,7 @@ private fun SpacesSection(
         modifier = modifier.fillMaxWidth()
     ) {
 
-        // =====================================================
         // HEADER
-        // =====================================================
-
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -882,10 +881,7 @@ private fun SpacesSection(
             modifier = Modifier.height(10.dp)
         )
 
-        // =====================================================
         // SPACE CARDS
-        // =====================================================
-
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)

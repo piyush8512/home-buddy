@@ -38,6 +38,9 @@ import com.example.buddy.ui.theme.HomeBuddyTheme
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.example.buddy.data.PantryItem
+import com.example.buddy.ui.screens.ItemDetailScreen
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +57,10 @@ class MainActivity : ComponentActivity() {
                 val scannedItem by viewModel.scannedItem.collectAsStateWithLifecycle()
                 var currentSpace by remember {mutableStateOf("Home")
                 }
-
+                var selectedItem by remember {
+                    mutableStateOf<PantryItem?>(null)
+                }
+                val showMainBars = selectedItem == null
 
                 val snackbarHostState = remember { SnackbarHostState() }
                 val scope = rememberCoroutineScope()
@@ -63,42 +69,100 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier
                         .fillMaxSize()
                         .windowInsetsPadding(WindowInsets.statusBars),
+
                     containerColor = BaseCanvas,
+
                     topBar = {
-                        PantryTopBar(
-                            currentSpace = currentSpace,
-                            onSpaceSelected = { selectedSpace ->
-                                currentSpace = selectedSpace
-                            },
-                            onNotificationClick = {
-                                scope.launch {
-                                    snackbarHostState.showSnackbar("All items in pantry are currently monitored.")
+                        if (showMainBars) {
+                            PantryTopBar(
+                                currentSpace = currentSpace,
+                                onSpaceSelected = { selectedSpace ->
+                                    currentSpace = selectedSpace
+                                },
+                                onNotificationClick = {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            "All items in pantry are currently monitored."
+                                        )
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     },
+
                     bottomBar = {
-                        PantryBottomNav(
-                            selectedTab = selectedTab,
-                            onTabSelected = { viewModel.setBottomNav(it) }
-                        )
+                        if (showMainBars) {
+                            PantryBottomNav(
+                                selectedTab = selectedTab,
+                                onTabSelected = {
+                                    viewModel.setBottomNav(it)
+                                }
+                            )
+                        }
                     },
-                    snackbarHost = { SnackbarHost(snackbarHostState) }
+
+                    snackbarHost = {
+                        SnackbarHost(snackbarHostState)
+                    }
                 ) { innerPadding ->
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding)
                     ) {
-                        when (selectedTab) {
-                            NavTab.HOME -> HomeScreen(viewModel = viewModel)
-                            NavTab.INVENTORY -> InventoryScreen(viewModel = viewModel)
-                            NavTab.SCAN -> ScanScreen(
-                                viewModel = viewModel,
-                                onBackClick = { viewModel.setBottomNav(NavTab.HOME) }
+                        if (selectedItem != null) {
+                            ItemDetailScreen(
+                                item = selectedItem!!,
+                                onBack = { selectedItem = null },
+                                onQuantityChange = { quantity ->
+                                    // TODO: update quantity
+                                },
+                                onToggleFavorite = {
+                                    // TODO: toggle favorite
+                                },
+                                onMarkAsConsumed = {
+                                    // TODO: mark item as consumed
+                                },
+
+                                onAddToRestockList = {
+                                    // TODO: add item to restock list
+                                }
+
                             )
-                            NavTab.LISTS -> ListsScreen()
-                            NavTab.HOUSEHOLD -> HouseholdScreen()
+                        } else {
+                            when (selectedTab) {
+                                NavTab.HOME -> {
+                                    HomeScreen(
+                                        viewModel = viewModel,
+                                        onPriorityClick = { item ->
+                                            selectedItem = item
+                                        }
+                                    )
+                                }
+
+                                NavTab.INVENTORY -> {
+                                    InventoryScreen(
+                                        viewModel = viewModel
+                                    )
+                                }
+
+                                NavTab.SCAN -> {
+                                    ScanScreen(
+                                        viewModel = viewModel,
+                                        onBackClick = {
+                                            viewModel.setBottomNav(NavTab.HOME)
+                                        }
+                                    )
+                                }
+
+                                NavTab.LISTS -> {
+                                    ListsScreen()
+                                }
+
+                                NavTab.HOUSEHOLD -> {
+                                    HouseholdScreen()
+                                }
+                            }
                         }
                     }
                 }

@@ -67,7 +67,7 @@ fun PantryBottomNav(
         ) {
             NavItem(
                 icon = Icons.Outlined.Home,
-                label = "Home",
+                label = "Today",
                 isSelected = selectedTab == NavTab.HOME,
                 onClick = { onTabSelected(NavTab.HOME) },
                 testTag = "nav_home"

@@ -18,5 +18,15 @@ data class PantryItem(
     val imageUrl: String = "https://lh3.googleusercontent.com/aida-public/AB6AXuAFIqQTH2gNzVof-4dV8MHAzTEr1jgA4AL6rVpEQeuzO1PIaUQ0vo1daIZEg_6IT3HSCqDoe-V-h_PniE8YsUQ7SNucWMmWrk-UCC3UQxM-nqyFZeeN5SeRdEb1EconuL-os6BvhVk9Hq7T5cmWYr7iQwlpMzvKVSWqpW28PxNPiE4H_oFgFC2x2P3_Gr_vhLVEnGZwnpDwUI26J2TB4KL3AIJOMgoZhEnlQmrJSGhT1LxKXJZf8YijNg",
     val addedDateMillis: Long = System.currentTimeMillis(),
     val confidenceScore: Int = 96,
-    val isConsumed: Boolean = false
+    val isConsumed: Boolean = false,
+    val isFavorite: Boolean = false,
+    val subtitle: String = "Non-GMO • Triple-strained • Live & active cultures",
+    val nutriScore: String = "A",
+    val ecoImpact: String = "B",
+    val calories: Int = 130,
+    val protein: String = "16g",
+    val carbs: String = "4g",
+    val fat: String = "5g",
+    val shelfLocation: String = "Top Door Bin • Shelf A",
+    val price: Double = 5.99,
 )
