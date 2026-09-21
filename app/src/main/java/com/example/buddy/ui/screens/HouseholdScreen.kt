@@ -105,7 +105,8 @@ enum class ZoneStatusType {
 @Composable
 fun HouseholdScreen(
     modifier: Modifier = Modifier,
-    onInviteClick: () -> Unit = {}
+    onInviteClick: () -> Unit = {},
+    onAddZoneClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
 
@@ -602,7 +603,7 @@ fun HouseholdScreen(
 
             // Add New Room or Zone Button
             Surface(
-                onClick = { },
+                onClick = { onAddZoneClick()},
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp)

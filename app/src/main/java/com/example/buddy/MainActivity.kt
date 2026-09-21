@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import com.example.buddy.data.PantryItem
 import com.example.buddy.ui.screens.ItemDetailScreen
 import com.example.buddy.ui.screens.AccountProfileScreen
+import com.example.buddy.ui.screens.StorageZonesPlacesScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -64,8 +65,11 @@ class MainActivity : ComponentActivity() {
                 var showProfile by remember {
                     mutableStateOf(false)
                 }
+                var showStorage by remember {
+                    mutableStateOf(false)
+                }
 
-                val showMainBars = selectedItem == null && !showProfile
+                val showMainBars = selectedItem == null && !showProfile && !showStorage
                 val snackbarHostState = remember { SnackbarHostState() }
                 val scope = rememberCoroutineScope()
 
@@ -124,7 +128,16 @@ class MainActivity : ComponentActivity() {
                                     showProfile = false
                                 }
                             )
-                        } else if (selectedItem != null) {
+                        }else if (showStorage) {
+                            StorageZonesPlacesScreen(
+                                onBackClick = {
+                                    showStorage = false
+                                }
+                            )
+
+                        }
+
+                        else if (selectedItem != null) {
                             ItemDetailScreen(
                                 item = selectedItem!!,
                                 onBack = { selectedItem = null },
@@ -174,7 +187,11 @@ class MainActivity : ComponentActivity() {
                                 }
 
                                 NavTab.HOUSEHOLD -> {
-                                    HouseholdScreen()
+                                    HouseholdScreen(
+                                        onAddZoneClick = {
+                                            showStorage = true
+                                        }
+                                    )
                                 }
                             }
                         }
