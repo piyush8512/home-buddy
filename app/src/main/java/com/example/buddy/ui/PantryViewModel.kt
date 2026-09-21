@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.buddy.data.PantryDatabase
 import com.example.buddy.data.PantryItem
 import com.example.buddy.data.PantryRepository
+import com.example.buddy.data.ShoppingItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -81,6 +82,9 @@ class PantryViewModel(application: Application) : AndroidViewModel(application) 
     private val _selectedBottomNav = MutableStateFlow(NavTab.SCAN)
     val selectedBottomNav: StateFlow<NavTab> = _selectedBottomNav.asStateFlow()
 
+
+
+
     // Dialogs
     private val _showAIAssistant = MutableStateFlow(false)
     val showAIAssistant: StateFlow<Boolean> = _showAIAssistant.asStateFlow()
@@ -93,6 +97,104 @@ class PantryViewModel(application: Application) : AndroidViewModel(application) 
 
     private val _showDatePicker = MutableStateFlow(false)
     val showDatePicker: StateFlow<Boolean> = _showDatePicker.asStateFlow()
+    private val _selectedStoreFilter = MutableStateFlow("All Stores")
+    val selectedStoreFilter: StateFlow<String> = _selectedStoreFilter.asStateFlow()
+
+    fun setStoreFilter(store: String) {
+        _selectedStoreFilter.value = store
+    }
+
+
+    fun completeTripAndUpdateStock(): Int {
+        val checkedItems = _restockItems.value.filter { it.isChecked }
+        // Uncheck or remove, reset replenishment dates in inventory
+        _restockItems.value = _restockItems.value.filter { !it.isChecked }
+        return checkedItems.size
+    }
+
+    private val _restockItems = MutableStateFlow<List<ShoppingItem>>(
+        listOf(
+            ShoppingItem(
+                id = 1,
+                name = "Avocado Oil 500ml",
+                subtitle = "Pantry Shelf • Whole Foods",
+                category = "Oils & Vinegars",
+                store = "Whole Foods",
+                isAutoDepleted = true,
+                depletionPercent = 10,
+                isChecked = false,
+                price = 11.49,
+                imageUrl = "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=200&auto=format&fit=crop&q=80"
+            ),
+            ShoppingItem(
+                id = 2,
+                name = "Chobani Greek Yogurt",
+                subtitle = "Fridge • Top shelf",
+                category = "Dairy & Cultured",
+                store = "Whole Foods",
+                isAutoDepleted = true,
+                depletionPercent = 0,
+                isChecked = false,
+                price = 5.99,
+                imageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuBsbBccmV_cpkMZikRBOjJEne4xF0LGtBf67A_YLRPToheRwa19EVxEJaMFS7ueVyWz7jlZHsdwmw7IsYBqRmi8_0IERQYj_ND9IFs_hhvzJ0iE_eOyIQ2-fPl5Gl0cj4HsyAuXDokAHOwPjSpsDkADVYjKF_dyl8AYkP8H3a5lLb-CCmThH-MocVA5549_0XEPkvTdbghA0GgCMMjaAOMIhJtQDvN3j7EUMiwtoODy2B7hdUtzZrWhMg"
+            ),
+            ShoppingItem(
+                id = 3,
+                name = "Organic Bananas",
+                subtitle = "$2.49 • In cart",
+                category = "Produce",
+                store = "Whole Foods",
+                isAutoDepleted = false,
+                isChecked = true,
+                price = 2.49,
+                addedByInitial = "A",
+                imageUrl = "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=200&auto=format&fit=crop&q=80"
+            ),
+            ShoppingItem(
+                id = 4,
+                name = "Artisan Sourdough",
+                subtitle = "$6.20 • In cart",
+                category = "Bakery",
+                store = "Whole Foods",
+                isAutoDepleted = false,
+                isChecked = true,
+                price = 6.20,
+                addedByInitial = "M",
+                imageUrl = "https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?w=200&auto=format&fit=crop&q=80"
+            )
+        )
+    )
+    val restockItems: StateFlow<List<ShoppingItem>> = _restockItems.asStateFlow()
+
+    fun addToRestockList(item: PantryItem) {
+        val current = _restockItems.value
+        val nextId = (current.maxOfOrNull { it.id } ?: 0) + 1
+        val itemTitle = if (item.packageSize.isNotEmpty()) "${item.name} (${item.packageSize})" else item.name
+        val newItem = ShoppingItem(
+            id = nextId,
+            name = itemTitle,
+            category = if (item.category.contains("•")) item.category.substringAfter("•").trim() else item.category
+        )
+        _restockItems.value = listOf(newItem) + current
+    }
+
+    fun toggleRestockItem(itemId: Int) {
+        _restockItems.value = _restockItems.value.map {
+            if (it.id == itemId) it.copy(isChecked = !it.isChecked) else it
+        }
+    }
+
+    fun addCustomRestockItem(name: String, category: String) {
+        if (name.isBlank()) return
+        val current = _restockItems.value
+        val nextId = (current.maxOfOrNull { it.id } ?: 0) + 1
+        val newItem = ShoppingItem(id = nextId, name = name, category = category)
+        _restockItems.value = listOf(newItem) + current
+    }
+
+    fun deleteRestockItem(itemId: Int) {
+        _restockItems.value = _restockItems.value.filter { it.id != itemId }
+    }
 
     fun setBottomNav(tab: NavTab) {
         _selectedBottomNav.value = tab
