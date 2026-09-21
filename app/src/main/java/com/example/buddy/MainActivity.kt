@@ -40,6 +40,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.example.buddy.data.PantryItem
 import com.example.buddy.ui.screens.ItemDetailScreen
+import com.example.buddy.ui.screens.AccountProfileScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -60,8 +61,11 @@ class MainActivity : ComponentActivity() {
                 var selectedItem by remember {
                     mutableStateOf<PantryItem?>(null)
                 }
-                val showMainBars = selectedItem == null
+                var showProfile by remember {
+                    mutableStateOf(false)
+                }
 
+                val showMainBars = selectedItem == null && !showProfile
                 val snackbarHostState = remember { SnackbarHostState() }
                 val scope = rememberCoroutineScope()
 
@@ -85,7 +89,11 @@ class MainActivity : ComponentActivity() {
                                             "All items in pantry are currently monitored."
                                         )
                                     }
+                                },
+                                onProfileClick = {
+                                    showProfile = true
                                 }
+
                             )
                         }
                     },
@@ -110,7 +118,13 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .padding(innerPadding)
                     ) {
-                        if (selectedItem != null) {
+                        if (showProfile) {
+                            AccountProfileScreen(
+                                onBackClick = {
+                                    showProfile = false
+                                }
+                            )
+                        } else if (selectedItem != null) {
                             ItemDetailScreen(
                                 item = selectedItem!!,
                                 onBack = { selectedItem = null },

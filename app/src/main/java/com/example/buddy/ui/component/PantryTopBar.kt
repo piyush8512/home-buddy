@@ -48,7 +48,8 @@ import androidx.compose.runtime.getValue
 fun PantryTopBar(
     currentSpace: String = "Home",
     onSpaceSelected: (String) -> Unit = {},
-    onNotificationClick: () -> Unit = {}
+    onNotificationClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {}
 ) {
 
     var isLocationMenuExpanded by remember {
@@ -149,6 +150,8 @@ fun PantryTopBar(
                 .size(40.dp)
                 .clip(CircleShape)
                 .background(SurfaceContainer)
+                .clickable { onProfileClick() }
+                .testTag("top_bar_profile_avatar")
         ) {
             AsyncImage(
                 model = "https://randomuser.me/api/portraits/men/75.jpg",
