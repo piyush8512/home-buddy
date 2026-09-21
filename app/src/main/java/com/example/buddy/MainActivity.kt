@@ -42,6 +42,7 @@ import com.example.buddy.data.PantryItem
 import com.example.buddy.ui.screens.ItemDetailScreen
 import com.example.buddy.ui.screens.AccountProfileScreen
 import com.example.buddy.ui.screens.StorageZonesPlacesScreen
+import com.example.buddy.ui.screens.NotificationsScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -65,11 +66,14 @@ class MainActivity : ComponentActivity() {
                 var showProfile by remember {
                     mutableStateOf(false)
                 }
+                var showNotification by remember {
+                    mutableStateOf(false)
+                }
                 var showStorage by remember {
                     mutableStateOf(false)
                 }
 
-                val showMainBars = selectedItem == null && !showProfile && !showStorage
+                val showMainBars = selectedItem == null && !showProfile && !showStorage && !showNotification
                 val snackbarHostState = remember { SnackbarHostState() }
                 val scope = rememberCoroutineScope()
 
@@ -88,11 +92,7 @@ class MainActivity : ComponentActivity() {
                                     currentSpace = selectedSpace
                                 },
                                 onNotificationClick = {
-                                    scope.launch {
-                                        snackbarHostState.showSnackbar(
-                                            "All items in pantry are currently monitored."
-                                        )
-                                    }
+                                    showNotification = true
                                 },
                                 onProfileClick = {
                                     showProfile = true
@@ -130,6 +130,14 @@ class MainActivity : ComponentActivity() {
                             )
                         }else if (showStorage) {
                             StorageZonesPlacesScreen(
+                                onBackClick = {
+                                    showStorage = false
+                                }
+                            )
+
+                        }
+                        else if (showNotification) {
+                            NotificationsScreen(
                                 onBackClick = {
                                     showStorage = false
                                 }
