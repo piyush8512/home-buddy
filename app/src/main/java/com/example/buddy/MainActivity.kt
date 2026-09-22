@@ -1,6 +1,13 @@
 package com.example.buddy
 
 import android.os.Bundle
+
+import android.graphics.Color
+
+import androidx.activity.SystemBarStyle
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -32,7 +39,7 @@ import com.example.buddy.ui.screens.HomeScreen
 import com.example.buddy.ui.screens.HouseholdScreen
 import com.example.buddy.ui.screens.InventoryScreen
 import com.example.buddy.ui.screens.ListsScreen
-import com.example.buddy.ui.screens.ScanScreen
+import com.example.buddy.ui.screens.QuickActionVoiceSyncScreen
 import com.example.buddy.ui.theme.BaseCanvas
 import com.example.buddy.ui.theme.HomeBuddyTheme
 import kotlinx.coroutines.launch
@@ -48,7 +55,12 @@ import com.example.buddy.ui.screens.NotificationsScreen
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.light(
+                Color.WHITE,
+                Color.WHITE
+            )
+        )
         setContent {
             HomeBuddyTheme {
                 val viewModel: PantryViewModel = viewModel()
@@ -66,16 +78,35 @@ class MainActivity : ComponentActivity() {
                 var showProfile by remember {
                     mutableStateOf(false)
                 }
+
+                var showQuickAction by remember {
+                    mutableStateOf(false)
+                }
+
                 var showNotification by remember {
                     mutableStateOf(false)
                 }
+
                 var showStorage by remember {
                     mutableStateOf(false)
                 }
 
-                val showMainBars = selectedItem == null && !showProfile && !showStorage && !showNotification
+                BackHandler(enabled = showProfile) {
+                    showProfile = false
+                }
+
+                BackHandler(enabled = showStorage) {
+                    showStorage = false
+                }
+
+                BackHandler(enabled = showNotification) {
+                    showNotification = false
+                }
+
+                val showMainBars = selectedItem == null && !showProfile && !showStorage && !showNotification &&  selectedTab != NavTab.SCAN
                 val snackbarHostState = remember { SnackbarHostState() }
                 val scope = rememberCoroutineScope()
+
 
                 Scaffold(
                     modifier = Modifier
@@ -136,10 +167,18 @@ class MainActivity : ComponentActivity() {
                             )
 
                         }
+                        else if (showQuickAction) {
+                        StorageZonesPlacesScreen(
+                            onBackClick = {
+                                showQuickAction = false
+                            }
+                        )
+
+                    }
                         else if (showNotification) {
                             NotificationsScreen(
                                 onBackClick = {
-                                    showStorage = false
+                                    showNotification  = false
                                 }
                             )
 
@@ -182,7 +221,7 @@ class MainActivity : ComponentActivity() {
                                 }
 
                                 NavTab.SCAN -> {
-                                    ScanScreen(
+                                    QuickActionVoiceSyncScreen(
                                         viewModel = viewModel,
                                         onBackClick = {
                                             viewModel.setBottomNav(NavTab.HOME)

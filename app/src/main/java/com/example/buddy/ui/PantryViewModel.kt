@@ -79,7 +79,7 @@ class PantryViewModel(application: Application) : AndroidViewModel(application) 
     private val _saveState = MutableStateFlow<SaveState>(SaveState.Idle)
     val saveState: StateFlow<SaveState> = _saveState.asStateFlow()
 
-    private val _selectedBottomNav = MutableStateFlow(NavTab.SCAN)
+    private val _selectedBottomNav = MutableStateFlow(NavTab.HOME)
     val selectedBottomNav: StateFlow<NavTab> = _selectedBottomNav.asStateFlow()
 
 
@@ -102,6 +102,12 @@ class PantryViewModel(application: Application) : AndroidViewModel(application) 
 
     fun setStoreFilter(store: String) {
         _selectedStoreFilter.value = store
+    }
+
+    fun insertCustomPantryItem(item: PantryItem) {
+        viewModelScope.launch {
+            repository.insertItem(item)
+        }
     }
 
 
