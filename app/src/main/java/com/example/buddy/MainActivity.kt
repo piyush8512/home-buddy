@@ -50,6 +50,7 @@ import com.example.buddy.ui.screens.ItemDetailScreen
 import com.example.buddy.ui.screens.AccountProfileScreen
 import com.example.buddy.ui.screens.StorageZonesPlacesScreen
 import com.example.buddy.ui.screens.NotificationsScreen
+import com.example.buddy.ui.screens.VerifyScannedItemScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -69,6 +70,7 @@ class MainActivity : ComponentActivity() {
                 val showEditItem by viewModel.showEditItem.collectAsStateWithLifecycle()
                 val showVerifyOcr by viewModel.showVerifyOcr.collectAsStateWithLifecycle()
                 val showDatePicker by viewModel.showDatePicker.collectAsStateWithLifecycle()
+                val showVerifyScannedItem by viewModel.showVerifyScannedItem.collectAsStateWithLifecycle()
                 val scannedItem by viewModel.scannedItem.collectAsStateWithLifecycle()
                 var currentSpace by remember {mutableStateOf("Home")
                 }
@@ -174,7 +176,17 @@ class MainActivity : ComponentActivity() {
                             }
                         )
 
-                    }
+                    } else if (showVerifyScannedItem) {
+                            VerifyScannedItemScreen(
+                                onBackClick = {
+                                    viewModel.setShowVerifyScannedItem(false)
+                                },
+                                onItemSaved = { pantryItem ->
+                                    viewModel.insertCustomPantryItem(pantryItem)
+                                    viewModel.setShowVerifyScannedItem(false)
+                                }
+                            )
+                        }
                         else if (showNotification) {
                             NotificationsScreen(
                                 onBackClick = {
@@ -223,6 +235,8 @@ class MainActivity : ComponentActivity() {
                                 NavTab.SCAN -> {
                                     QuickActionVoiceSyncScreen(
                                         viewModel = viewModel,
+
+                                        onOcrScanClick = { viewModel.setShowVerifyScannedItem(true) },
                                         onBackClick = {
                                             viewModel.setBottomNav(NavTab.HOME)
                                         }

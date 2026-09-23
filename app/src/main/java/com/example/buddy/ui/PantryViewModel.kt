@@ -82,6 +82,13 @@ class PantryViewModel(application: Application) : AndroidViewModel(application) 
     private val _selectedBottomNav = MutableStateFlow(NavTab.HOME)
     val selectedBottomNav: StateFlow<NavTab> = _selectedBottomNav.asStateFlow()
 
+    // Verify Scanned Item (OCR) Screen State
+    private val _showVerifyScannedItem = MutableStateFlow(false)
+    val showVerifyScannedItem: StateFlow<Boolean> = _showVerifyScannedItem.asStateFlow()
+
+    fun setShowVerifyScannedItem(show: Boolean) {
+        _showVerifyScannedItem.value = show
+    }
 
 
 

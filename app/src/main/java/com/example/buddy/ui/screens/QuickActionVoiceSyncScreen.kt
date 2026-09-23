@@ -1,7 +1,6 @@
 package com.example.buddy.ui.screens
 
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -38,8 +37,8 @@ import androidx.compose.material.icons.outlined.CheckCircleOutline
 import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.Keyboard
+import androidx.compose.material.icons.outlined.DocumentScanner
 import androidx.compose.material.icons.outlined.Mic
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material3.Icon
@@ -92,6 +91,7 @@ fun QuickActionVoiceSyncScreen(
     viewModel: PantryViewModel,
     onBackClick: () -> Unit,
     onProfileClick: () -> Unit = {},
+    onOcrScanClick: () -> Unit = {},
     onNavigateToShopping: () -> Unit = {},
     onMessage: (String) -> Unit = {},
     modifier: Modifier = Modifier
@@ -177,15 +177,15 @@ fun QuickActionVoiceSyncScreen(
                     .size(38.dp)
                     .clip(CircleShape)
                     .background(Color.Black)
-                    .clickable { onProfileClick() }
-                    .testTag("quick_action_profile_btn"),
+                    .clickable { onOcrScanClick() }
+                    .testTag("quick_action_ocr_scan_btn"),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Person,
-                    contentDescription = "Profile",
+                    imageVector = Icons.Outlined.DocumentScanner,
+                    contentDescription = "Scan Item via OCR",
                     tint = Color.White,
-                    modifier = Modifier.size(22.dp)
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }
