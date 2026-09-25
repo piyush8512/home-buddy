@@ -1,7 +1,7 @@
 package com.example.buddybackend.cron;
 
-import com.example.pantry.model.ExpiryAlertDto;
-import com.example.pantry.service.PantryService;
+import com.example.buddybackend.model.ExpiryAlertDto;
+import com.example.buddybackend.service.PantryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

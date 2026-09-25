@@ -1,4 +1,4 @@
-package com.example.pantry.model;
+package com.example.buddybackend.model;
 
 public class PantryItemDto {
     private String id;

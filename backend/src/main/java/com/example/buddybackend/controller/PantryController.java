@@ -1,8 +1,8 @@
 package com.example.buddybackend.controller;
 
-import com.example.pantry.model.ExpiryAlertDto;
-import com.example.pantry.model.PantryItemDto;
-import com.example.pantry.service.PantryService;
+import com.example.buddybackend.model.ExpiryAlertDto;
+import com.example.buddybackend.model.PantryItemDto;
+import com.example.buddybackend.service.PantryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
