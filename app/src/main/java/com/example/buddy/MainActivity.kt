@@ -69,10 +69,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.light(
-                Color.WHITE,
-                Color.WHITE
-            )
+            statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT)
         )
         setContent {
             HomeBuddyTheme {
@@ -94,8 +91,13 @@ class MainActivity : ComponentActivity() {
                     }
 
                     AuthState.Success -> {
-
                         BuddyApp()
+//                        LoginScreen(
+//                            authState = authState,
+//                            onGoogleSignIn = {
+//                                authViewModel.signInWithGoogle(activity)
+//                            }
+//                        )
                     }
                 }
             }
