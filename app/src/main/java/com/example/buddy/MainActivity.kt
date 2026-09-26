@@ -82,12 +82,13 @@ class MainActivity : ComponentActivity() {
                     AuthState.Loading,
                     is AuthState.Error -> {
 
-                        LoginScreen(
-                            authState = authState,
-                            onGoogleSignIn = {
-                                authViewModel.signInWithGoogle(activity)
-                            }
-                        )
+//                        LoginScreen(
+//                            authState = authState,
+//                            onGoogleSignIn = {
+//                                authViewModel.signInWithGoogle(activity)
+//                            }
+//                        )
+                        BuddyApp()
                     }
 
                     AuthState.Success -> {

@@ -91,7 +91,7 @@ fun LoginScreen(
                 .height(580.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_background), // Replace with your background drawable
+                painter = painterResource(id = R.drawable.ic_background),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
@@ -143,7 +143,7 @@ fun LoginScreen(
                         }
                     },
                     color = Color.White,
-                    fontFamily = PlayfairFontFamily, // Make sure PlayfairFontFamily has both regular and italic fonts loaded
+                    fontFamily = PlayfairFontFamily,
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Normal,
                     textAlign = TextAlign.Center,
