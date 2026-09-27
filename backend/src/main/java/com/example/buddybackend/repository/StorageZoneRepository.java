@@ -1,0 +1,14 @@
+package com.example.buddybackend.repository;
+
+import com.example.buddybackend.entity.StorageZone;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.util.UUID;
+
+public interface StorageZoneRepository extends JpaRepository<StorageZone, UUID> {
+
+    List<StorageZone> findByHouseholdId(UUID householdId);
+
+    List<StorageZone> findByHouseholdIdOrderByDisplayOrderAsc(UUID householdId);
+}
