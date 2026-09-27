@@ -1,7 +1,7 @@
 package com.example.buddy.viewmodel
 
-import android.app.Application
 import android.app.Activity
+import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.buddy.data.auth.GoogleAuthRepository
@@ -42,10 +42,24 @@ class AuthViewModel(
 
             _authState.value = AuthState.Loading
 
-            val result =
+            // 1. Login with Google + Firebase
+            val loginResult =
                 repository.signInWithGoogle(activity)
 
-            _authState.value = result.fold(
+            if (loginResult.isFailure) {
+                _authState.value = AuthState.Error(
+                    loginResult.exceptionOrNull()?.message
+                        ?: "Google Sign-In failed"
+                )
+                return@launch
+            }
+
+            // 2. Firebase login successful
+            // Get Firebase token and call Spring Boot
+            val backendResult =
+                repository.getBackendUser()
+
+            _authState.value = backendResult.fold(
 
                 onSuccess = {
                     AuthState.Success
@@ -53,7 +67,8 @@ class AuthViewModel(
 
                 onFailure = {
                     AuthState.Error(
-                        it.message ?: "Google Sign-In failed"
+                        it.message
+                            ?: "Backend authentication failed"
                     )
                 }
             )

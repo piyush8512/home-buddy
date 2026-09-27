@@ -1,5 +1,7 @@
 package com.example.buddy.data.auth
 
+import com.example.buddy.data.network.RetrofitClient
+import com.example.buddy.data.user.User
 import android.app.Activity
 import android.content.Context
 import androidx.credentials.CredentialManager
@@ -64,6 +66,39 @@ class GoogleAuthRepository(
             auth.signInWithCredential(firebaseCredential).await()
 
             Result.success(Unit)
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+
+            Result.failure(e)
+        }
+    }
+
+
+    suspend fun getBackendUser(): Result<User> {
+
+        return try {
+
+            val firebaseUser = auth.currentUser
+                ?: return Result.failure(
+                    Exception("User is not logged in")
+                )
+
+            val tokenResult = firebaseUser
+                .getIdToken(true)
+                .await()
+
+            val token = tokenResult.token
+                ?: return Result.failure(
+                    Exception("Firebase token is null")
+                )
+
+            val user = RetrofitClient
+                .userApi
+                .getCurrentUser("Bearer $token")
+
+            Result.success(user)
 
         } catch (e: Exception) {
 

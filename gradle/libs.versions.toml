@@ -1,5 +1,6 @@
 [versions]
 agp = "8.12.3"
+converterGson = "3.0.0"
 firebaseBom = "33.11.0"
 kotlin = "2.0.21"
 coreKtx = "1.10.1"
@@ -20,6 +21,7 @@ cameraView = "1.5.0"
 cameraCore = "1.5.0"
 mlkitTextRecognition = "16.0.1"
 
+retrofit = "3.0.0"
 room = "2.6.1"
 coroutines = "1.8.1"
 ksp = "2.0.21-1.0.28"
@@ -30,6 +32,7 @@ androidx-credentials = { group = "androidx.credentials", name = "credentials", v
 
 androidx-credentials-play-services-auth = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credentials" }
 
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleid" }
 
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
@@ -92,6 +95,7 @@ kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 
 mlkit-text-recognition = { group = "com.google.mlkit", name = "text-recognition", version.ref = "mlkitTextRecognition" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 
