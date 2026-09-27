@@ -1,20 +1,21 @@
 package com.example.buddybackend.config;
 
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.FirestoreOptions;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
-import com.google.firebase.auth.FirebaseAuth;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.FirestoreOptions;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.auth.FirebaseAuth;
 
 @Configuration
 public class FirebaseConfig {
@@ -49,7 +50,7 @@ public class FirebaseConfig {
                     credentials = GoogleCredentials.getApplicationDefault();
                 } catch (Exception e) {
                     log.warn("Application default credentials not available, fallback to mock credentials for local development.");
-                    return null;
+                    throw new IllegalStateException("Firebase credentials not configured", e);
                 }
             }
 
@@ -61,16 +62,13 @@ public class FirebaseConfig {
             return FirebaseApp.initializeApp(options);
         } catch (Exception e) {
             log.error("Failed to initialize FirebaseApp: {}", e.getMessage());
-            return null;
+              throw new IllegalStateException("Failed to initialize Firebase", e);
         }
     }
 
     @Bean
     public FirebaseAuth firebaseAuth(FirebaseApp firebaseApp) {
-        if (firebaseApp != null) {
-            return FirebaseAuth.getInstance(firebaseApp);
-        }
-        return null;
+       return FirebaseAuth.getInstance(firebaseApp);
     }
 
     @Bean
